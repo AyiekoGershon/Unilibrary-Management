@@ -4,6 +4,7 @@ A modern digital bag tracking system designed for university libraries to effici
 
 ## 📋 Table of Contents
 
+- [About](#about)
 - [Overview](#overview)
 - [Features](#features)
 - [Screenshots](#screenshots)
@@ -23,6 +24,51 @@ A modern digital bag tracking system designed for university libraries to effici
 UniLibrary Bag Management System is a web application that streamlines the process of tracking library bags and packages. Librarians can easily check bags in when students arrive and check them out when students leave, with real-time visibility of all active check-ins.
 
 **Live Demo:** [UniLibrary Management](https://unilibrarymanagement.netlify.app)
+
+## ℹ️ About
+
+### Problem Statement
+
+University libraries face operational challenges in managing the large volume of student bags and personal belongings, especially during peak hours. Traditional manual tracking methods are:
+- **Time-consuming** - Librarians manually record bag details
+- **Error-prone** - Paper-based systems lead to lost or misplaced items
+- **Inefficient** - No real-time visibility of checked-in items
+- **Unscalable** - Difficult to manage during busy periods
+
+### Solution
+
+UniLibrary Bag Management System provides an automated, real-time solution that:
+- **Digitizes** the entire bag tracking workflow
+- **Reduces errors** with unique auto-generated tracking tags
+- **Improves efficiency** by streamlining check-in/check-out processes
+- **Enhances visibility** with a live dashboard of all active bags
+- **Secures data** with Google OAuth authentication and role-based access
+
+### Use Cases
+
+1. **During Check-In**: When a student arrives with a bag, the librarian enters bag details, and the system generates a unique tracking tag that can be printed or displayed on screen.
+
+2. **During Check-Out**: When the student returns, the librarian quickly retrieves the bag record using the tracking tag or student ID and marks it as checked out.
+
+3. **Lost & Found**: The active check-ins dashboard helps identify unclaimed bags and their owners.
+
+4. **Peak Hours Management**: Real-time visibility helps librarians manage multiple concurrent check-ins/check-outs efficiently.
+
+5. **Reporting**: Track bag traffic patterns to optimize library operations.
+
+### Target Users
+
+- **Librarians** - Primary users who manage bag check-in/check-out operations
+- **Library Administrators** - Access to reports and analytics
+- **Students** - Benefit from faster, more organized bag storage services
+
+### Project Goals
+
+✅ Reduce bag-related operational workload  
+✅ Improve accuracy of bag tracking  
+✅ Provide real-time visibility of library activities  
+✅ Enhance overall library user experience  
+✅ Create a scalable, maintainable solution  
 
 ## ✨ Features
 
