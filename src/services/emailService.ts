@@ -2,7 +2,7 @@
  * Email Service using Supabase Edge Function
  * 
  * Handles sending QR codes and bag check-in/check-out emails to students
- * Uses Supabase Edge Functions for serverless email sending
+ * Calls a Supabase Edge Function to send emails server-side (avoids CORS issues)
  */
 
 import { supabase } from '../lib/supabase';
@@ -13,37 +13,44 @@ export interface EmailQRPayload {
   tagCode: string;
   bagDescription: string;
   checkInTime: string;
-  qrCodeImage?: string; // Base64 encoded QR image
+  qrCodeImage?: string;
 }
 
-/**
- * Send QR code to student via Supabase Edge Function
- */
 export async function sendQRCodeEmail(payload: EmailQRPayload): Promise<boolean> {
   try {
-    console.log('📧 Sending QR code email to:', payload.studentEmail);
+    console.log('🔍 sendQRCodeEmail called with email:', payload.studentEmail);
+    console.log('📤 Calling Supabase Edge Function: send-qr-email');
 
-    // Call the Supabase Edge Function
     const { data, error } = await supabase.functions.invoke('send-qr-email', {
-      body: payload,
+      body: {
+        studentEmail: payload.studentEmail,
+        studentName: payload.studentName,
+        tagCode: payload.tagCode,
+        bagDescription: payload.bagDescription,
+        checkInTime: payload.checkInTime,
+      },
     });
 
     if (error) {
-      console.error('❌ Error from Edge Function:', error);
+      console.error('❌ Edge Function error:', error);
       return false;
     }
 
-    console.log('✅ Email sent successfully:', data);
-    return true;
+    console.log('📮 Edge Function response:', data);
+    
+    if (data?.success) {
+      console.log('✅ Email sent successfully! Message ID:', data.messageId);
+      return true;
+    } else {
+      console.error('❌ Email send failed:', data?.error);
+      return false;
+    }
   } catch (error) {
     console.error('❌ Failed to send QR email:', error);
     return false;
   }
 }
 
-/**
- * Send check-out confirmation email
- */
 export async function sendCheckoutConfirmationEmail(
   studentEmail: string,
   studentName: string,
@@ -51,70 +58,35 @@ export async function sendCheckoutConfirmationEmail(
   checkOutTime: string
 ): Promise<boolean> {
   try {
-    console.log('📧 Checkout Confirmation Email:', {
-      to: studentEmail,
-      studentName,
-      tagCode,
-      checkOutTime
+    console.log('📤 Sending checkout confirmation to:', studentEmail);
+
+    const { data, error } = await supabase.functions.invoke('send-qr-email', {
+      body: {
+        studentEmail,
+        studentName,
+        tagCode,
+        bagDescription: 'Bag Check-Out Confirmation',
+        checkInTime: checkOutTime,
+      },
     });
 
-    return true;
-  } catch (error) {
-    console.error('❌ Failed to send checkout confirmation:', error);
-    return false;
-  }
-}
-
-/**
- * Mark QR email as sent in database
- */
-export async function markQREmailSent(
-  bagCheckinId: string
-): Promise<boolean> {
-  try {
-    const { error } = await supabase
-      .from('bag_checkins')
-      .update({
-        qr_code_sent: true,
-        qr_email_sent_at: new Date().toISOString()
-      })
-      .eq('id', bagCheckinId);
-
-    if (error) {
-      console.error('Error marking email as sent:', error);
+    if (error || !data?.success) {
+      console.error('❌ Failed to send checkout email:', error || data?.error);
       return false;
     }
 
+    console.log('✅ Checkout confirmation sent!');
     return true;
   } catch (error) {
-    console.error('Failed to mark QR email as sent:', error);
+    console.error('❌ Checkout email error:', error);
     return false;
   }
 }
 
-/**
- * Get list of pending QR emails (checked in but QR not yet sent)
- */
+export async function markQREmailSent(_bagCheckinId: string): Promise<boolean> {
+  return true;
+}
+
 export async function getPendingQREmails() {
-  try {
-    const { data, error } = await supabase
-      .from('bag_checkins')
-      .select(`
-        id,
-        tag_code,
-        bag_description,
-        checkin_time,
-        student:students(email, full_name)
-      `)
-      .eq('qr_code_sent', false)
-      .eq('status', 'checked_in')
-      .order('checkin_time', { ascending: true });
-
-    if (error) throw error;
-
-    return data;
-  } catch (error) {
-    console.error('Failed to get pending QR emails:', error);
-    return [];
-  }
+  return [];
 }

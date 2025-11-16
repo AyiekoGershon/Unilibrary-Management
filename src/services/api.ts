@@ -102,14 +102,27 @@ export const checkinService = {
       // Generate QR code data
       const qrData = generateQRCodeData(checkin.id, checkin.tag_code, checkin.student_id);
 
+      console.log('🔄 Starting generateAndSendQR for checkin:', checkin.id);
+      console.log('✅ QR data generated');
+
       // Update database with QR data
-      await supabase
+      const { error: dbError } = await supabase
         .from('bag_checkins')
         .update({ qr_code_data: qrData })
         .eq('id', checkin.id);
+      
+      if (dbError) {
+        console.error('❌ DB error updating QR data:', dbError);
+      } else {
+        console.log('✅ Database updated with QR data');
+      }
 
       // Send email with QR code
+      console.log('📧 Student email:', checkin.student.email);
+      console.log('📧 Student name:', checkin.student.full_name);
+      
       if (checkin.student.email) {
+        console.log('📤 Sending email to:', checkin.student.email);
         const emailSent = await sendQRCodeEmail({
           studentEmail: checkin.student.email,
           studentName: checkin.student.full_name,
@@ -118,9 +131,12 @@ export const checkinService = {
           checkInTime: new Date(checkin.checkin_time).toLocaleString()
         });
 
+        console.log('📮 Email sent result:', emailSent);
         if (emailSent) {
           await markQREmailSent(checkin.id);
         }
+      } else {
+        console.warn('⚠️  Student has no email address');
       }
     } catch (error) {
       console.error('Error generating/sending QR code:', error);
