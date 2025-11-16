@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "node dist/index.js",
     "lint": "eslint .",
     "preview": "vite preview",
+    "start": "npm run build && vite preview --host 0.0.0.0 --port 3000",
     "typecheck": "tsc --noEmit -p tsconfig.app.json"
   },
   "dependencies": {
@@ -34,3 +34,4 @@
     "vite": "^5.4.2"
   }
 }
+
