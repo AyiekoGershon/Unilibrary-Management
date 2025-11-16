@@ -1,6 +1,8 @@
 import { supabase } from '../lib/supabase';
 import { Student, BagCheckinWithStudent } from '../types';
 import { generateTagCode } from '../utils/tagGenerator';
+import { generateQRCodeData } from '../utils/qrCodeGenerator';
+import { sendQRCodeEmail, markQREmailSent } from './emailService';
 
 export const studentService = {
   async lookup(studentId: string): Promise<Student | null> {
@@ -84,10 +86,46 @@ export const checkinService = {
 
     if (error) throw error;
 
-    return {
+    const result: BagCheckinWithStudent = {
       ...data,
       student
     };
+
+    // Generate QR code data and send email (async, don't wait)
+    await this.generateAndSendQR(result);
+
+    return result;
+  },
+
+  async generateAndSendQR(checkin: BagCheckinWithStudent): Promise<void> {
+    try {
+      // Generate QR code data
+      const qrData = generateQRCodeData(checkin.id, checkin.tag_code, checkin.student_id);
+
+      // Update database with QR data
+      await supabase
+        .from('bag_checkins')
+        .update({ qr_code_data: qrData })
+        .eq('id', checkin.id);
+
+      // Send email with QR code
+      if (checkin.student.email) {
+        const emailSent = await sendQRCodeEmail({
+          studentEmail: checkin.student.email,
+          studentName: checkin.student.full_name,
+          tagCode: checkin.tag_code,
+          bagDescription: checkin.bag_description,
+          checkInTime: new Date(checkin.checkin_time).toLocaleString()
+        });
+
+        if (emailSent) {
+          await markQREmailSent(checkin.id);
+        }
+      }
+    } catch (error) {
+      console.error('Error generating/sending QR code:', error);
+      // Don't throw - let check-in succeed even if QR fails
+    }
   },
 
   async checkOut(tagCode: string, librarianId: string): Promise<BagCheckinWithStudent> {

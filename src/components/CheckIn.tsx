@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { studentService, checkinService } from '../services/api';
 import { Student, BagCheckinWithStudent } from '../types';
 import { Search, Package, CheckCircle } from 'lucide-react';
+import QRDisplay from './QRDisplay';
 
 export default function CheckIn() {
   const [studentId, setStudentId] = useState('');
@@ -62,28 +63,37 @@ export default function CheckIn() {
 
   if (checkin) {
     return (
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Check-In Successful!</h2>
-          <div className="bg-gray-50 rounded-lg p-6 my-6">
-            <div className="text-5xl font-bold text-blue-600 mb-2">{checkin.tag_code}</div>
-            <p className="text-gray-600">Bag Tag Code</p>
+      <>
+        <QRDisplay
+          qrData={checkin.qr_code_data || JSON.stringify({ checkInId: checkin.id, tagCode: checkin.tag_code, timestamp: checkin.checkin_time })}
+          tagCode={checkin.tag_code}
+          studentName={checkin.student.full_name}
+          bagDescription={checkin.bag_description}
+          onClose={handleReset}
+        />
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Check-In Successful!</h2>
+            <div className="bg-gray-50 rounded-lg p-6 my-6">
+              <div className="text-5xl font-bold text-blue-600 mb-2">{checkin.tag_code}</div>
+              <p className="text-gray-600">Bag Tag Code</p>
+            </div>
+            <div className="text-left space-y-2 mb-6">
+              <p className="text-gray-700"><strong>Student:</strong> {checkin.student.full_name}</p>
+              <p className="text-gray-700"><strong>ID:</strong> {checkin.student.student_id}</p>
+              <p className="text-gray-700"><strong>Bag:</strong> {checkin.bag_description}</p>
+              <p className="text-gray-700"><strong>Time:</strong> {new Date(checkin.checkin_time).toLocaleString()}</p>
+            </div>
+            <button
+              onClick={handleReset}
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Check In Another Bag
+            </button>
           </div>
-          <div className="text-left space-y-2 mb-6">
-            <p className="text-gray-700"><strong>Student:</strong> {checkin.student.full_name}</p>
-            <p className="text-gray-700"><strong>ID:</strong> {checkin.student.student_id}</p>
-            <p className="text-gray-700"><strong>Bag:</strong> {checkin.bag_description}</p>
-            <p className="text-gray-700"><strong>Time:</strong> {new Date(checkin.checkin_time).toLocaleString()}</p>
-          </div>
-          <button
-            onClick={handleReset}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Check In Another Bag
-          </button>
         </div>
-      </div>
+      </>
     );
   }
 

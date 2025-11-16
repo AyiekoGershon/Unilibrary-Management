@@ -1,0 +1,9 @@
+{
+  "project_id": "ytnllzhkucgraiwnoxrj",
+  "functions": [
+    {
+      "slug": "send-qr-email",
+      "importmap_version": "v1"
+    }
+  ]
+}
