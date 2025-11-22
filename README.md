@@ -1,13 +1,19 @@
 # UniLibrary – Library Bag Management System
 
 UniLibrary digitizes on-prem bag lockers with QR codes, real-time tracking, and beautifully branded messaging. The November 2025 refresh ships a dual-theme experience, immersive onboarding, and streak-aware checkout emails.
+<img width="1913" height="823" alt="image" src="https://github.com/user-attachments/assets/1dcbabbb-aad0-4bee-9e19-519055bee16f" />
+
 
 ## ✨ Highlights
 
 - **Dual Theme** – Light/dark toggle remembered per user, gradient backgrounds, glassmorphism cards.
 - **Premium Sign-in** – Story-driven landing page, inline theme switch, single-click Google OAuth.
 - **Check-in Magic** – Student lookup, unique tag + styled QR, email confirmation with QR preview & download.
+- <img width="1913" height="665" alt="image" src="https://github.com/user-attachments/assets/b41a4844-0f31-4591-be8b-1bce1b096c5b" />
+
 - **Smart Checkouts** – Manual tag entry or camera scan. Both paths trigger post-visit emails summarizing time spent and visit streak.
+- <img width="1895" height="645" alt="image" src="https://github.com/user-attachments/assets/4e209d2e-e8a6-44e6-ab52-c697568be63f" />
+
 - **Live Ops** – Supabase realtime keeps dashboard rows in sync; search + suggestions accelerate releases.
 
 ## 🧱 Tech Stack
