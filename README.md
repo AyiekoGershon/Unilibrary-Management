@@ -15,6 +15,8 @@ UniLibrary digitizes on-prem bag lockers with QR codes, real-time tracking, and 
 - <img width="1895" height="645" alt="image" src="https://github.com/user-attachments/assets/4e209d2e-e8a6-44e6-ab52-c697568be63f" />
 
 - **Live Ops** – Supabase realtime keeps dashboard rows in sync; search + suggestions accelerate releases.
+- <img width="1893" height="571" alt="image" src="https://github.com/user-attachments/assets/9e0acdfe-8511-43e2-a8b9-38ff35778857" />
+
 
 ## 🧱 Tech Stack
 
