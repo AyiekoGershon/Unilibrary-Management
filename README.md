@@ -1,291 +1,169 @@
-# UniLibrary Bag Management System
+# UniLibrary – Library Bag Management System
 
-A modern digital bag tracking system designed for university libraries to efficiently manage student bag check-ins and check-outs.
+UniLibrary digitizes on-prem bag lockers with QR codes, real-time tracking, and beautifully branded messaging. The November 2025 refresh ships a dual-theme experience, immersive onboarding, and streak-aware checkout emails.
 
-## 📋 Table of Contents
+## ✨ Highlights
 
-- [About](#about)
-- [Overview](#overview)
-- [Features](#features)
-- [Screenshots](#screenshots)
-- [Tech Stack](#tech-stack)
-- [Installation](#installation)
-- [Environment Setup](#environment-setup)
-- [Running the Project](#running-the-project)
-- [Deployment](#deployment)
-- [Project Structure](#project-structure)
-- [Authentication](#authentication)
-- [Database](#database)
-- [Contributing](#contributing)
-- [License](#license)
+- **Dual Theme** – Light/dark toggle remembered per user, gradient backgrounds, glassmorphism cards.
+- **Premium Sign-in** – Story-driven landing page, inline theme switch, single-click Google OAuth.
+- **Check-in Magic** – Student lookup, unique tag + styled QR, email confirmation with QR preview & download.
+- **Smart Checkouts** – Manual tag entry or camera scan. Both paths trigger post-visit emails summarizing time spent and visit streak.
+- **Live Ops** – Supabase realtime keeps dashboard rows in sync; search + suggestions accelerate releases.
 
-## 🎯 Overview
+## 🧱 Tech Stack
 
-UniLibrary Bag Management System is a web application that streamlines the process of tracking library bags and packages. Librarians can easily check bags in when students arrive and check them out when students leave, with real-time visibility of all active check-ins.
+| Layer | Technology | Notes |
+| --- | --- | --- |
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS (dark mode) | Single-page app with responsive layout |
+| Auth + DB | Supabase (PostgreSQL, Realtime, OAuth Google) | Students + bag_checkins tables with RLS |
+| Email | Supabase Edge Functions (Deno) + Resend API | Separate check-in & checkout templates |
+| QR/Camera | `qr-code-styling`, `html5-qrcode` | Styled QR render + device camera scanning |
 
-**Live Demo:** [UniLibrary Management](https://unilibrarymanagement.netlify.app)
+## 📁 Structure (excerpt)
 
-## ℹ️ About
-
-### Problem Statement
-
-University libraries face operational challenges in managing the large volume of student bags and personal belongings, especially during peak hours. Traditional manual tracking methods are:
-- **Time-consuming** - Librarians manually record bag details
-- **Error-prone** - Paper-based systems lead to lost or misplaced items
-- **Inefficient** - No real-time visibility of checked-in items
-- **Unscalable** - Difficult to manage during busy periods
-
-### Solution
-
-UniLibrary Bag Management System provides an automated, real-time solution that:
-- **Digitizes** the entire bag tracking workflow
-- **Reduces errors** with unique auto-generated tracking tags
-- **Improves efficiency** by streamlining check-in/check-out processes
-- **Enhances visibility** with a live dashboard of all active bags
-- **Secures data** with Google OAuth authentication and role-based access
-
-### Use Cases
-
-1. **During Check-In**: When a student arrives with a bag, the librarian enters bag details, and the system generates a unique tracking tag that can be printed or displayed on screen.
-
-2. **During Check-Out**: When the student returns, the librarian quickly retrieves the bag record using the tracking tag or student ID and marks it as checked out.
-
-3. **Lost & Found**: The active check-ins dashboard helps identify unclaimed bags and their owners.
-
-4. **Peak Hours Management**: Real-time visibility helps librarians manage multiple concurrent check-ins/check-outs efficiently.
-
-5. **Reporting**: Track bag traffic patterns to optimize library operations.
-
-### Target Users
-
-- **Librarians** - Primary users who manage bag check-in/check-out operations
-- **Library Administrators** - Access to reports and analytics
-- **Students** - Benefit from faster, more organized bag storage services
-
-### Project Goals
-
-✅ Reduce bag-related operational workload  
-✅ Improve accuracy of bag tracking  
-✅ Provide real-time visibility of library activities  
-✅ Enhance overall library user experience  
-✅ Create a scalable, maintainable solution  
-
-## ✨ Features
-
-- **Google OAuth Authentication** - Secure librarian sign-in via Google accounts
-- **Check In System** - Register bags as they arrive with unique tracking tags
-- **Check Out System** - Process departing bags and remove them from tracking
-- **Active Check-Ins Dashboard** - View all currently checked-in bags in real-time
-- **Responsive Design** - Works seamlessly on desktop and mobile devices
-- **Real-time Updates** - Instant synchronization across sessions
-
-## 📸 Screenshots
-
-### Sign In Page
-[INSERT SCREENSHOT HERE]
-
-### Check In Tab
-[INSERT SCREENSHOT HERE]
-
-### Check Out Tab
-[INSERT SCREENSHOT HERE]
-
-### Active Check-Ins Dashboard
-[INSERT SCREENSHOT HERE]
-
-## 🛠 Tech Stack
-
-### Frontend
-- **React 18.3** - UI framework
-- **TypeScript 5.5** - Type safety
-- **Vite 5.4** - Build tool and dev server
-- **Tailwind CSS 3.4** - Styling
-- **Lucide React** - Icon library
-
-### Backend & Services
-- **Supabase** - PostgreSQL database + authentication
-- **Supabase JS SDK 2.57** - Client library for Supabase integration
-
-### Development Tools
-- **ESLint 9.9** - Code linting
-- **PostCSS 8.4** - CSS processing
-- **Autoprefixer** - Browser compatibility
-
-## 📦 Installation
-
-### Prerequisites
-- Node.js (v16 or higher)
-- npm or yarn
-- Git
-
-### Clone the Repository
-
-```bash
-git clone https://github.com/AyiekoGershon/UNILAB.git
-cd UNILAB
+```
+├── src/
+│   ├── components/
+│   │   ├── SignIn.tsx              # Hero landing + OAuth
+│   │   ├── CheckIn.tsx             # Student lookup, bag intake
+│   │   ├── BagManagement.tsx       # Live dashboard + manual checkout
+│   │   ├── QRCheckoutScanner.tsx   # Html5Qrcode-powered checkout
+│   │   ├── CheckOut.tsx            # Tag-code fallback
+│   │   └── QRDisplay.tsx           # Modal with styled QR + download
+│   ├── services/
+│   │   ├── api.ts                  # Bag/student services, streak calc, email triggers
+│   │   └── emailService.ts         # Shared Supabase Edge invocation helpers
+│   ├── lib/supabase.ts
+│   ├── utils/tagGenerator.ts
+│   └── main.tsx, App.tsx, index.css
+├── supabase/
+│   ├── functions/send-qr-email/    # Edge function + reference copy
+│   └── migrations/…                # Schema + RLS migrations
+└── README.md
 ```
 
-### Install Dependencies
+## 🚀 Getting Started
 
+### Requirements
+- Node.js ≥ 18
+- Supabase project (URL, anon key, service/deploy token)
+- Resend API key (trial ok)
+- Google OAuth credentials (for Supabase Auth)
+
+### Installation
 ```bash
+git clone <repo>
+cd UNILAB
 npm install
 ```
 
-## ⚙️ Environment Setup
-
-Create a `.env` file in the root directory with your Supabase credentials:
-
+Create `.env`:
 ```env
-VITE_SUPABASE_URL=https://your-project-id.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key-here
+VITE_SUPABASE_URL=https://<project>.supabase.co
+VITE_SUPABASE_ANON_KEY=<anon-key>
+SUPABASE_ACCESS_TOKEN=<service-role-or-deploy-token>
+RESEND_API_KEY=<resend-api-key>
 ```
 
-### Google OAuth Setup
+### Running Locally
+```bash
+npm run dev                 # http://localhost:5173
+npm run dev -- --host 0.0.0.0   # test from phone browser
+npm run build && npm run preview
+```
 
-The project uses Google OAuth for authentication. Follow the [SUPABASE_OAUTH_SETUP.md](./SUPABASE_OAUTH_SETUP.md) file for detailed configuration instructions.
+## 📱 Mobile Testing
+1. Run `npm run dev -- --host 0.0.0.0`.
+2. Note the LAN IP Vite prints (e.g., `http://192.168.1.42:5173`).
+3. Open that URL in a mobile browser on the same Wi‑Fi. The responsive UI + camera scanner work directly via HTTPS/HTTP (production should be HTTPS for camera permissions).
 
-**Key OAuth Redirect URIs:**
-- Production (Netlify): `https://unilibrarymanagement.netlify.app/auth/callback`
-- Production (Render): `https://your-render-domain.onrender.com/auth/callback`
-- Local Development: `http://localhost:5173/auth/callback`
+## 📧 Email Automation
 
-## 🚀 Running the Project
+| Flow | Trigger | Contents |
+| --- | --- | --- |
+| Check-in | After bag creation | Student name, bag summary, check-in time, QR code image, reference tag |
+| Check-out | Manual or QR checkout | Checkout timestamp, total time in library, visit streak badge, bag reference, thank-you note |
 
-### Development Server
+- Edge endpoint: `POST /functions/v1/send-qr-email`
+- Secrets: `RESEND_API_KEY` (set via `npx supabase secrets set …`)
+- Deploy/update: `npx supabase functions deploy send-qr-email --project-ref <ref>`
 
+## 🗄️ Database Schema
+
+### `students`
+| column | type | notes |
+| --- | --- | --- |
+| id | uuid PK |
+| student_id | text unique |
+| full_name | text |
+| email | text not null |
+| phone | text |
+| email_verified | boolean default false |
+| created_at | timestamptz default now |
+
+### `bag_checkins`
+| column | type | notes |
+| --- | --- | --- |
+| id | uuid PK |
+| student_id | uuid FK → students |
+| tag_code | text unique (`LIB-####`) |
+| bag_description | text |
+| checkin_time / checkout_time | timestamptz |
+| status | text (`checked_in`, `checked_out`) |
+| librarian_id | text |
+| qr_code_data | text JSON payload |
+| qr_code_sent, qr_email_sent_at, qr_scanned_for_checkout | tracking columns |
+
+## 🔄 Flow
+1. **Authenticate** – Librarian logs in via Google OAuth.
+2. **Check-In** – Search student → describe bag → generate tag + QR, email automatically sent.
+3. **Manage** – Dashboard lists active bags, search/autocomplete, manual checkout button.
+4. **QR Checkout** – Html5Qrcode camera scans bag QR and auto-checks out; same service handles tag entry fallback.
+5. **Post-visit Email** – Duration & streak stats computed, thank-you email delivered through edge function.
+
+## 🔐 Security & Ops
+- Supabase row-level security enforced on `students` and `bag_checkins`.
+- Authenticated librarians only; no anonymous bag access.
+- Edge function isolates Resend API key server-side.
+- Theme preference stored in `localStorage` (`unilab-theme`); no PII persisted in frontend storage.
+
+## 📦 Deployment Cheat Sheet
+
+```bash
+# Frontend bundle
+npm run build
+# deploy dist/ to Render/Netlify/Vercel/etc.
+
+# Backend / Edge
+npx supabase secrets set RESEND_API_KEY=<value> --project-ref <ref>
+npx supabase functions deploy send-qr-email --project-ref <ref>
+```
+
+## 🛠 Development Commands
 ```bash
 npm run dev
-```
-
-Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-### Production Build
-
-```bash
 npm run build
-```
-
-### Preview Production Build
-
-```bash
-npm start
-```
-
-This builds the app and serves it on `http://localhost:3000`.
-
-### Type Checking
-
-```bash
-npm run typecheck
-```
-
-### Linting
-
-```bash
+npm run preview
 npm run lint
+npm run typecheck
+npx supabase functions logs send-qr-email --project-ref <ref>
 ```
 
-## �배포 Deployment
-
-### Netlify
-
-1. Connect your GitHub repository to Netlify
-2. Set build command: `npm run build`
-3. Set publish directory: `dist`
-4. Add environment variables (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)
-5. Update Supabase OAuth redirect URI to your Netlify domain
-
-### Render
-
-1. Create a new Web Service on Render
-2. Connect your GitHub repository
-3. Set start command: `npm start`
-4. Add environment variables (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)
-5. Update Supabase OAuth redirect URI to your Render domain
-
-## 📁 Project Structure
-
-```
-UNILAB/
-├── src/
-│   ├── components/
-│   │   ├── SignIn.tsx          # Google OAuth sign-in component
-│   │   ├── CheckIn.tsx         # Bag check-in interface
-│   │   ├── CheckOut.tsx        # Bag check-out interface
-│   │   └── ActiveCheckins.tsx  # Active bags dashboard
-│   ├── lib/
-│   │   └── supabase.ts         # Supabase client initialization
-│   ├── services/
-│   │   └── api.ts              # API service calls
-│   ├── types/
-│   │   └── index.ts            # TypeScript type definitions
-│   ├── utils/
-│   │   └── tagGenerator.ts     # Unique tag generation utility
-│   ├── App.tsx                 # Main app component
-│   ├── main.tsx                # Entry point
-│   └── index.css               # Global styles
-├── supabase/
-│   ├── migrations/             # Database migrations
-│   └── google-credentials.json # Google OAuth credentials (local only)
-├── public/                     # Static assets
-├── vite.config.ts              # Vite configuration
-├── tailwind.config.js          # Tailwind CSS configuration
-├── tsconfig.json               # TypeScript configuration
-├── package.json                # Project dependencies
-└── README.md                   # This file
-```
-
-## 🔐 Authentication
-
-### Google OAuth Flow
-
-1. User clicks "Sign in with Google" button
-2. Redirected to Google authentication page
-3. After authorization, redirected to `https://supabase-url/auth/v1/callback`
-4. Supabase validates the OAuth code and creates a session
-5. Redirected back to the app with access token in URL hash
-6. App captures session and displays main interface
-
-### Environment-Based Redirects
-
-The app automatically uses the correct redirect URI based on the deployment environment:
-- **Local**: `http://localhost:5173/auth/callback`
-- **Netlify**: `https://unilibrarymanagement.netlify.app/auth/callback`
-- **Render**: `https://your-render-domain.onrender.com/auth/callback`
-
-## 🗄️ Database
-
-### Supabase PostgreSQL Setup
-
-The project uses Supabase PostgreSQL database for storing bag check-in/check-out records. Run migrations in `supabase/migrations/` to set up tables and Row Level Security (RLS) policies.
-
-**Database Features:**
-- Row Level Security (RLS) for data protection
-- Real-time subscriptions for live updates
-- Automatic timestamps on all records
+## 🐛 Troubleshooting
+- **Emails missing** – confirm Resend key + verified recipient; inspect `npx supabase functions logs send-qr-email`.
+- **Camera blocked** – browsers require HTTPS + permission; on desktop ensure a secure origin when deploying.
+- **OAuth errors** – align Supabase redirect URLs with Google console + Render/Vercel domain.
+- **QR duplicates** – `generateTagCode` loops until a free `LIB-####` code is found, but you can increase digits if volume spikes.
 
 ## 🤝 Contributing
+1. Fork / create feature branch.
+2. `npm run lint && npm run typecheck`.
+3. Update docs/tests where relevant.
+4. Submit PR.
 
-Contributions are welcome! Please follow these steps:
+## 📄 License
+MIT
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 📞 Support
-
-For issues, questions, or suggestions, please open an issue on the GitHub repository.
-
-## 🙏 Acknowledgments
-
-- [Supabase](https://supabase.com) - Backend and authentication
-- [Vite](https://vitejs.dev) - Build tool
-- [React](https://react.dev) - UI framework
-- [Tailwind CSS](https://tailwindcss.com) - Styling framework
-- [Google OAuth](https://developers.google.com/identity/protocols/oauth2) - Authentication provider
+---
+**Last Updated:** November 19, 2025  
+**Status:** ✅ Production Ready (Dark Mode & Streak Emails)

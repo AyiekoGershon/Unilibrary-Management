@@ -11,9 +11,15 @@ export interface EmailQRPayload {
   studentEmail: string;
   studentName: string;
   tagCode: string;
-  bagDescription: string;
-  checkInTime: string;
+  bagDescription?: string;
+  checkInTime?: string;
   qrCodeImage?: string;
+  template?: 'checkin' | 'checkout';
+  checkoutTime?: string;
+  visitDurationMinutes?: number;
+  visitDurationLabel?: string;
+  streakDays?: number;
+  thanksNote?: string;
 }
 
 export async function sendQRCodeEmail(payload: EmailQRPayload): Promise<boolean> {
@@ -23,11 +29,17 @@ export async function sendQRCodeEmail(payload: EmailQRPayload): Promise<boolean>
 
     const { data, error } = await supabase.functions.invoke('send-qr-email', {
       body: {
+        template: payload.template || 'checkin',
         studentEmail: payload.studentEmail,
         studentName: payload.studentName,
         tagCode: payload.tagCode,
         bagDescription: payload.bagDescription,
         checkInTime: payload.checkInTime,
+        checkoutTime: payload.checkoutTime,
+        visitDurationMinutes: payload.visitDurationMinutes,
+        visitDurationLabel: payload.visitDurationLabel,
+        streakDays: payload.streakDays,
+        thanksNote: payload.thanksNote,
       },
     });
 
@@ -51,22 +63,32 @@ export async function sendQRCodeEmail(payload: EmailQRPayload): Promise<boolean>
   }
 }
 
-export async function sendCheckoutConfirmationEmail(
-  studentEmail: string,
-  studentName: string,
-  tagCode: string,
-  checkOutTime: string
-): Promise<boolean> {
+export interface CheckoutEmailPayload {
+  studentEmail: string;
+  studentName: string;
+  tagCode: string;
+  checkoutTime: string;
+  visitDurationMinutes: number;
+  visitDurationLabel: string;
+  streakDays: number;
+  thanksNote?: string;
+}
+
+export async function sendCheckoutConfirmationEmail(payload: CheckoutEmailPayload): Promise<boolean> {
   try {
-    console.log('📤 Sending checkout confirmation to:', studentEmail);
+    console.log('📤 Sending checkout confirmation to:', payload.studentEmail);
 
     const { data, error } = await supabase.functions.invoke('send-qr-email', {
       body: {
-        studentEmail,
-        studentName,
-        tagCode,
-        bagDescription: 'Bag Check-Out Confirmation',
-        checkInTime: checkOutTime,
+        template: 'checkout',
+        studentEmail: payload.studentEmail,
+        studentName: payload.studentName,
+        tagCode: payload.tagCode,
+        checkoutTime: payload.checkoutTime,
+        visitDurationMinutes: payload.visitDurationMinutes,
+        visitDurationLabel: payload.visitDurationLabel,
+        streakDays: payload.streakDays,
+        thanksNote: payload.thanksNote,
       },
     });
 
@@ -84,6 +106,8 @@ export async function sendCheckoutConfirmationEmail(
 }
 
 export async function markQREmailSent(_bagCheckinId: string): Promise<boolean> {
+  // legacy helper: mark parameter used to avoid linter unused-param warnings
+  void _bagCheckinId;
   return true;
 }
 
